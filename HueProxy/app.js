@@ -15,8 +15,8 @@ function register(req, res, next) {
     let device = {
         deviceId: req.params.uid
     };
-    registry.create(device, function(err) {
-        registry.get(device.deviceId, function(err, deviceInfo) {
+    registry.create(device, (err) => {
+        registry.get(device.deviceId, (err, deviceInfo) => {
             res.send({
                 "uid": req.params.uid,
                 "deviceInfo": deviceInfo
@@ -34,7 +34,7 @@ function command(req, res, next) {
     const message = new Message(req.body);
 
     // Send the message
-    client.send(req.params.uid, message, function(err) {
+    client.send(req.params.uid, message, (err) => {
         if (err) {
             console.log('Error sending message to: ' + req.params.uid);
             console.log(err);
@@ -49,7 +49,7 @@ function command(req, res, next) {
 }
 
 // Connect to IoT Hub
-client.open(function(err) {
+client.open((err) => {
     if (err) {
         console.log('Error connecting to: ' + connectionString);
         console.log(err);
@@ -68,6 +68,6 @@ server.get('/register/:uid', register);
 server.post('/command/:uid', command);
 
 // Run server
-server.listen(8080, function() {
+server.listen(8080, () => {
   console.log('%s listening at %s', server.name, server.url);
 });
