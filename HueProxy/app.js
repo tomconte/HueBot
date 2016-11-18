@@ -68,6 +68,6 @@ server.get('/register/:uid', register);
 server.post('/command/:uid', command);
 
 // Run server
-server.listen(8080, () => {
+server.listen(process.env.PORT, () => {
   console.log('%s listening at %s', server.name, server.url);
 });
