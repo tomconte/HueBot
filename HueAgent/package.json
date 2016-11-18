@@ -1,0 +1,16 @@
+{
+  "name": "hueagent",
+  "version": "1.0.0",
+  "description": "Hue Agent",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Conte",
+  "license": "ISC",
+  "dependencies": {
+    "azure-iot-device": "^1.1.0",
+    "azure-iot-device-amqp": "^1.1.0",
+    "request": "^2.78.0"
+  }
+}

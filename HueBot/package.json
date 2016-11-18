@@ -1,0 +1,15 @@
+{
+  "name": "huebot",
+  "version": "1.0.0",
+  "description": "This Bot will control your Hue lamps.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Conte",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.4.4",
+    "restify": "^4.3.0"
+  }
+}
