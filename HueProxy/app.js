@@ -17,7 +17,6 @@ function register(req, res, next) {
     };
     registry.create(device, function(err) {
         registry.get(device.deviceId, function(err, deviceInfo) {
-            console.log(JSON.stringify(deviceInfo));
             res.send({
                 "uid": req.params.uid,
                 "deviceInfo": deviceInfo
