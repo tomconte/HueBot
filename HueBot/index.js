@@ -5,20 +5,13 @@ var request = require('request');
 //=========================================================
 // Bot Setup
 //=========================================================
-
-// Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url); 
-});
   
-// Create chat bot
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
+
 var bot = new builder.UniversalBot(connector);
-server.post('/api/messages', connector.listen());
 
 //=========================================================
 // Bots Dialogs
@@ -48,3 +41,22 @@ bot.dialog('/', function (session, args, next) {
             break;
     }
 });
+
+//=========================================================
+// Deployment
+//=========================================================
+
+if (process.env.FUNCTIONS_EXTENSION_VERSION) {
+    // If we are in the Azure Functions runtime...
+    const listener = connector.listen();
+    module.exports = (context, req) => {
+        listener(req, context.res);
+    }
+} else {
+    // Otherwise, setup Restify Server
+    var server = restify.createServer();
+    server.post('/api/messages', connector.listen());
+    server.listen(process.env.port || process.env.PORT || 3978, function () {
+        console.log('%s listening to %s', server.name, server.url); 
+    });
+}
