@@ -11,7 +11,7 @@ const request = require('request');
 
 // Find the Hue Bridge
 
-request('https://www.meethue.com/api/nupnp', function (error, response, body) {
+request('https://www.meethue.com/api/nupnp', (error, response, body) => {
     if (!error && response.statusCode == 200) {
         console.log('Found the bridge!');
         console.log(body);
@@ -42,7 +42,7 @@ request('https://www.meethue.com/api/nupnp', function (error, response, body) {
 
 function registerAgent(ip, id, u) {
     let uuid = id + '-' + u;
-    request('http://localhost:8080/register/' + uuid, function (error, response, body) {
+    request('http://localhost:8080/register/' + uuid, (error, response, body) => {
         const deviceInfo = JSON.parse(body).deviceInfo;
         const connectionString = "HostName=HueHub.azure-devices.net;DeviceId=" + deviceInfo.deviceId + ";SharedAccessKey=" + deviceInfo.authentication.symmetricKey.primaryKey;
         console.log('********************\nThis is your UUID: ' + uuid + '\n********************')
@@ -59,18 +59,18 @@ function startAgent(ip, user, connectionString) {
     const client = Client.fromConnectionString(connectionString, Protocol);
     client.open(function() {
         console.log('Client connected. Forwarding commands to ' + ip);
-        client.on('message', function(msg) {
+        client.on('message', (msg) => {
             console.log(msg.data);
-            executeCommand(ip, user, msg.data, function() {
-                client.complete(msg, function() {
+            executeCommand(ip, user, msg.data, () => {
+                client.complete(msg, () => {
                     console.log('Command acknowledged.');
                 });
             });
         });
-        client.on('error', function(err) {
+        client.on('error', (err) => {
             console.error(err.message);
         });
-        client.on('disconnect', function() {
+        client.on('disconnect', () => {
             client.removeAllListeners();
             client.open(connectCallback);
         });
