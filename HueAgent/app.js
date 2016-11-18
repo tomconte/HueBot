@@ -42,7 +42,7 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
 
 function registerAgent(ip, id, u) {
     let uuid = id + '-' + u;
-    request('http://localhost:8080/register/' + uuid, (error, response, body) => {
+    request('http://hueproxy.azurewebsites.net/register/' + uuid, (error, response, body) => {
         if (error) {
             console.log(error);
             return;
