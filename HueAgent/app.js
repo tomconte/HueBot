@@ -43,6 +43,10 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
 function registerAgent(ip, id, u) {
     let uuid = id + '-' + u;
     request('http://localhost:8080/register/' + uuid, (error, response, body) => {
+        if (error) {
+            console.log(error);
+            return;
+        }
         const deviceInfo = JSON.parse(body).deviceInfo;
         const connectionString = "HostName=HueHub.azure-devices.net;DeviceId=" + deviceInfo.deviceId + ";SharedAccessKey=" + deviceInfo.authentication.symmetricKey.primaryKey;
         console.log('********************\nThis is your UUID: ' + uuid + '\n********************')
@@ -78,10 +82,37 @@ function startAgent(ip, user, connectionString) {
 }
 
 /********************************************************************************/
-/* Agent
+/* Commands
 /********************************************************************************/
 
 function executeCommand(ip, user, command, cb) {
     console.log('Send command ' + command.command + ' to ' + ip + ' with ' + user);
+
+    let url = 'http://' + ip + '/api/' + user;
+    let options;
+
+    switch (command.command) {
+        case 'turnAllLightsOn':
+            options = {
+                url: url + '/groups/0/action',
+                body: JSON.stringify({on: true})
+            };
+            request.put(options, (error, response, body) => {
+                console.log(error);
+            });
+            break;
+        case 'turnAllLightsOff':
+            options = {
+                url: url + '/groups/0/action',
+                body: JSON.stringify({on: false})
+            };
+            request.put(options, (error, response, body) => {
+                if (error) console.log(error);
+            });
+            break;
+        default:
+            console.log('Unknown command ' + command);
+    }
+
     cb();
 }
