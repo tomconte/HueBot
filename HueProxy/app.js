@@ -4,7 +4,7 @@ const iothub = require('azure-iothub');
 const Message = require('azure-iot-common').Message;
 const restify = require('restify');
 
-const connectionString = 'HostName=HueHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=llJRnP/m5BkiRz0bStz17hd/ojizZomKGvGbFKGGq2I=';
+const connectionString = process.env.IOTHUB_CONNECTION_STRING;
 
 const registry = iothub.Registry.fromConnectionString(connectionString);
 const client = iothub.Client.fromConnectionString(connectionString);
