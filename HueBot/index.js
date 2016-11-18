@@ -21,7 +21,7 @@ const UUID = '001788fffe09ff3c-WDFWKbjWPutKHhaMSRJoKbREawkFnFmrvjPj9T4y';
 const PROXY_URL = 'http://hueproxy.azurewebsites.net/command/' + UUID;
 
 bot.dialog('/', function (session, args, next) {
-    switch (session.message.text) {
+    switch (session.message.text.toLowerCase()) {
         case 'on':
             session.send("J'allume les lumières !");
             request.post({
