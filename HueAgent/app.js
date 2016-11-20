@@ -5,6 +5,9 @@ const Client = require('azure-iot-device').Client;
 const Message = require('azure-iot-device').Message;
 const request = require('request');
 
+let bridgeIp, bridgeId, userName;
+let client;
+
 /********************************************************************************/
 /* Initialization
 /********************************************************************************/
@@ -16,11 +19,10 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
         console.log('Found the bridge!');
         console.log(body);
         let b = JSON.parse(body)[0];
-        let bridgeIp = b.internalipaddress;
-        let bridgeId = b.id;
+        bridgeIp = b.internalipaddress;
+        bridgeId = b.id;
 
         // Now we need a whitelisted username for the Bridge
-        let userName;
         // Option 1: the user has a username and enters it as a parameter
         if (process.argv[2]) {
             userName = process.argv[2];
@@ -29,7 +31,7 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
         // TODO
         
         // Now register the bridge with the proxy service
-        registerAgent(bridgeIp, bridgeId, userName);
+        registerAgent();
     } else {
         console.log(error);
         return;
@@ -40,8 +42,8 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
 /* Device registration
 /********************************************************************************/
 
-function registerAgent(ip, id, u) {
-    let uuid = id + '-' + u;
+function registerAgent() {
+    let uuid = bridgeId + '-' + userName;
     request('http://hueproxy.azurewebsites.net/register/' + uuid, (error, response, body) => {
         if (error) {
             console.log(error);
@@ -50,7 +52,7 @@ function registerAgent(ip, id, u) {
         const deviceInfo = JSON.parse(body).deviceInfo;
         const connectionString = "HostName=HueHub.azure-devices.net;DeviceId=" + deviceInfo.deviceId + ";SharedAccessKey=" + deviceInfo.authentication.symmetricKey.primaryKey;
         console.log('********************\nThis is your UUID: ' + uuid + '\n********************')
-        startAgent(ip, u, connectionString); 
+        startAgent(connectionString); 
     });
 }
 
@@ -58,26 +60,28 @@ function registerAgent(ip, id, u) {
 /* Agent
 /********************************************************************************/
 
-function startAgent(ip, user, connectionString) {
+function startAgent(connectionString) {
     // Connect directly to IoT Hub
-    const client = Client.fromConnectionString(connectionString, Protocol);
-    client.open(function() {
-        console.log('Client connected. Forwarding commands to ' + ip);
-        client.on('message', (msg) => {
-            console.log(msg.data);
-            executeCommand(ip, user, msg.data, () => {
-                client.complete(msg, () => {
-                    console.log('Command acknowledged.');
-                });
+    client = Client.fromConnectionString(connectionString, Protocol);
+    client.open(connectCallback);
+}
+
+function connectCallback() {
+    console.log('Client connected. Forwarding commands to ' + bridgeIp);
+    client.on('message', (msg) => {
+        console.log(msg.data);
+        executeCommand(bridgeIp, userName, msg.data, () => {
+            client.complete(msg, () => {
+                console.log('Command acknowledged.');
             });
         });
-        client.on('error', (err) => {
-            console.error(err.message);
-        });
-        client.on('disconnect', () => {
-            client.removeAllListeners();
-            client.open(connectCallback);
-        });
+    });
+    client.on('error', (err) => {
+        console.error(err.message);
+    });
+    client.on('disconnect', () => {
+        client.removeAllListeners();
+        client.open(connectCallback);
     });
 }
 
