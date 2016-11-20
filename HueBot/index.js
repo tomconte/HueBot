@@ -23,6 +23,9 @@ const PROXY_URL = 'http://hueproxy.azurewebsites.net/command/' + UUID;
 bot.dialog('/', function (session, args, next) {
     switch (session.message.text.toLowerCase()) {
         case 'on':
+        case 'allume':
+        case 'allume toutes les lumières':
+        case 'allume les lumières':
             session.send("J'allume les lumières !");
             request.post({
                 url: PROXY_URL,
@@ -30,11 +33,17 @@ bot.dialog('/', function (session, args, next) {
             });
             break;
         case 'off':
+        case 'éteint':
+        case 'éteint toutes les lumières':
+        case 'éteint les lumières':
             session.send("J'éteins les lumières !");
             request.post({
                 url: PROXY_URL,
                 json: {command: 'turnAllLightsOff'}
             });
+            break;
+        case 'tu es bête':
+            session.send('Et toi tu es débile !');
             break;
         default:
             session.send("Commande inconnue !");
