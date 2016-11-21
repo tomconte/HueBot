@@ -16,19 +16,29 @@ let client;
 
 request('https://www.meethue.com/api/nupnp', (error, response, body) => {
     if (!error && response.statusCode == 200) {
+        let bridgeInfo = JSON.parse(body)[0];
+
+        if (!bridgeInfo) {
+            console.log('Bridge not found!');
+            return;
+        }
+
         console.log('Found the bridge!');
         console.log(body);
-        let b = JSON.parse(body)[0];
-        bridgeIp = b.internalipaddress;
-        bridgeId = b.id;
+
+        bridgeIp = bridgeInfo.internalipaddress;
+        bridgeId = bridgeInfo.id;
 
         // Now we need a whitelisted username for the Bridge
-        // Option 1: the user has a username and enters it as a parameter
         if (process.argv[2]) {
+            // Option 1: the user has a username and enters it as a parameter
             userName = process.argv[2];
+        } else {
+            // Option 2: the user doesn't have a username, let's create a new one
+            // TODO
+            console.log('Creating a new user...');
+            return;
         }
-        // Option 2: the user doesn't have a username, let's create a new one
-        // TODO
         
         // Now register the bridge with the proxy service
         registerAgent();
