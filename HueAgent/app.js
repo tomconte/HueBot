@@ -114,8 +114,30 @@ function executeCommand(ip, user, command, cb) {
                 if (error) console.log(error);
             });
             break;
+        case 'recallScene':
+            request(url + '/scenes', (error, response, body) => {
+                if (error) console.log(error);
+
+                let scenes = JSON.parse(body);
+                let sceneId;
+
+                for (let i in scenes)
+                    if (scenes[i].name.toLowerCase() == command.scene)
+                        sceneId = i;
+
+                if (!sceneId) console.log('Scene ' + command.scene + ' not found!');
+
+                options = {
+                    url: url + '/groups/0/action',
+                    body: JSON.stringify({scene: sceneId})
+                };
+                request.put(options, (error, response, body) => {
+                    if (error) console.log(error);
+                });
+            });
+            break;
         default:
-            console.log('Unknown command ' + command);
+            console.log('Unknown command ' + command.command);
     }
 
     cb();
