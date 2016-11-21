@@ -21,7 +21,8 @@ const UUID = '001788fffe09ff3c-WDFWKbjWPutKHhaMSRJoKbREawkFnFmrvjPj9T4y';
 const PROXY_URL = 'http://hueproxy.azurewebsites.net/command/' + UUID;
 
 bot.dialog('/', function (session, args, next) {
-    switch (session.message.text.toLowerCase()) {
+    let t = session.message.text.toLowerCase();
+    switch (t) {
         case 'on':
         case 'allume':
         case 'allume toutes les lumières':
@@ -46,7 +47,16 @@ bot.dialog('/', function (session, args, next) {
             session.send('Et toi tu es débile !');
             break;
         default:
-            session.send("Commande inconnue !");
+            if (t.substring(0, 5) == 'scene') {
+                let sceneName = t.split(' ')[1];
+                session.send('Je rappelle la scène ' + sceneName + ' !');
+                request.post({
+                    url: PROXY_URL,
+                    json: {command: 'recallScene', scene: sceneName}
+                });
+            } else {
+                session.send("Commande inconnue !");
+            }
             break;
     }
 });
