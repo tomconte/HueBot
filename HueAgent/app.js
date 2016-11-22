@@ -5,6 +5,8 @@ const Client = require('azure-iot-device').Client;
 const Message = require('azure-iot-device').Message;
 const request = require('request');
 
+const REGISTER_URL = 'https://huebot.azurewebsites.net/api/HueProxyFnRegister?code=fMwuFHfblXp1lB6sO6W1TLTmHtrnT5Dq50wx2ApXG5LdOqaGpCAgQA==';
+
 let bridgeIp, bridgeId, userName;
 let client;
 
@@ -54,7 +56,11 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
 
 function registerAgent() {
     let uuid = bridgeId + '-' + userName;
-    request('http://hueproxy.azurewebsites.net/register/' + uuid, (error, response, body) => {
+    let options = {
+        url: REGISTER_URL,
+        body: uuid
+    };
+    request.post(options, (error, response, body) => {
         if (error) {
             console.log(error);
             return;
