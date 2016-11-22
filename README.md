@@ -2,7 +2,11 @@
 
 This chatbot will rule your Hue lights.
 
-However, sending commands to the Hue Bridge in your home is hard (because of the security, and it's good).
+However, sending commands to the Hue Bridge in your home is hard (because of the security, and it's good). This means we need a bit of architecture in order to be able to talk to the Hue Bridge inside your home network.
+
+## Overall architecture
+
+![Architecture Diagram](images/Functions_IoT_Demo.png)
 
 ## Hue Agent
 
