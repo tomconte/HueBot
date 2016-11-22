@@ -1,0 +1,14 @@
+{
+  "name": "hueproxy-fn-register",
+  "version": "1.0.0",
+  "description": "Hue Proxy Function Register",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Conte",
+  "license": "ISC",
+  "dependencies": {
+    "azure-iothub": "^1.1.0"
+  }
+}
