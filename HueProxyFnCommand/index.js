@@ -9,6 +9,7 @@ module.exports = function(context, req) {
     const message = new Message(req.body);
 
     // Connect to IoT Hub
+    const uid = context.bindingData.uid;
     const client = iothub.Client.fromConnectionString(connectionString);
     client.open((err) => {
         if (err) {
@@ -19,14 +20,14 @@ module.exports = function(context, req) {
         } else {
             context.log('Connected to: ' + connectionString);
             // Send the message
-            client.send(req.params.uid, message, (err) => {
+            client.send(uid, message, (err) => {
                 if (err) {
-                    context.log('Error sending message to: ' + req.params.uid);
+                    context.log('Error sending message to: ' + uid);
                     context.log(err);
                     context.res = { status: 500, body: 'Error sending message to IoT Hub' };
                     context.done();
                 } else {
-                    context.log('Message sent to ' + req.params.uid);
+                    context.log('Message sent to ' + uid);
                     context.res = { status: 200, body: 'Message sent' };
                     context.done();
                 }
