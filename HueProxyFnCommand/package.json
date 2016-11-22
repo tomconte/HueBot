@@ -1,0 +1,15 @@
+{
+  "name": "hueproxy-fn-command",
+  "version": "1.0.0",
+  "description": "Hue Proxy Function Command",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Conte",
+  "license": "ISC",
+  "dependencies": {
+    "azure-iot-common": "^1.1.0",
+    "azure-iothub": "^1.1.0"
+  }
+}
