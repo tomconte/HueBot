@@ -9,14 +9,14 @@ module.exports = function(context, req) {
 
     // Device object
     let device = {
-        deviceId: req.params.uid
+        deviceId: req.body
     };
 
     // Create device in IoTHub registry
     registry.create(device, (err) => {
         registry.get(device.deviceId, (err, deviceInfo) => {
             context.res.send({
-                "uid": req.params.uid,
+                "uid": req.body,
                 "deviceInfo": deviceInfo
             });
         });
