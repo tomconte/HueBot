@@ -5,7 +5,7 @@ const Client = require('azure-iot-device').Client;
 const Message = require('azure-iot-device').Message;
 const request = require('request');
 
-const REGISTER_URL = 'https://huebot.azurewebsites.net/api/HueProxyFnRegister?code=fMwuFHfblXp1lB6sO6W1TLTmHtrnT5Dq50wx2ApXG5LdOqaGpCAgQA==';
+const REGISTER_URL = 'https://huebot.azurewebsites.net/api/HueProxyFnRegister';
 
 let bridgeIp, bridgeId, userName;
 let client;
