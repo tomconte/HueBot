@@ -5,7 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "command/{uid:alpha}"
+      "route": "command/{uid}"
     },
     {
       "type": "http",
