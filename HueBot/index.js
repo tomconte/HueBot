@@ -17,7 +17,8 @@ var bot = new builder.UniversalBot(connector);
 // Bots Dialogs
 //=========================================================
 
-const UUID = '001788fffe09ff3c-WDFWKbjWPutKHhaMSRJoKbREawkFnFmrvjPj9T4y';
+// TODO: store this in user session
+const UUID = '001788fffe09ff3c-SytarAfJSr2talYJE-fuSc9D6s1hbgzBe9dEqxd0';
 const PROXY_URL = 'https://huebot.azurewebsites.net/api/command/' + UUID;
 
 bot.dialog('/', function (session, args, next) {
