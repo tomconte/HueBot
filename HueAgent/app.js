@@ -35,20 +35,44 @@ request('https://www.meethue.com/api/nupnp', (error, response, body) => {
         if (process.argv[2]) {
             // Option 1: the user has a username and enters it as a parameter
             userName = process.argv[2];
+            registerAgent();
         } else {
             // Option 2: the user doesn't have a username, let's create a new one
             // TODO
-            console.log('Creating a new user...');
-            return;
+            console.log('Creating a new user... Please go and press the Link button on your bridge now!');
+            setTimeout(waitForLinkButton, 1000);
         }
-        
-        // Now register the bridge with the proxy service
-        registerAgent();
     } else {
+        console.log('Error connecting to NUPNP!');
         console.log(error);
         return;
     }
 })
+
+// Wait for Link button
+
+function waitForLinkButton() {
+    let options = {
+        url: 'http://' + bridgeIp + '/api',
+        body: '{"devicetype": "HueBot#agent"}'
+    }
+    request.post(options, (error, response, body) => {
+        let res = JSON.parse(body)[0];
+        if (res.error) {
+            if (res.error.type == 101) {
+                console.log('Waiting...');
+                setTimeout(waitForLinkButton, 1000);
+            } else {
+                console.log('Unexpected error waiting for Link button!');
+                console.log(body);
+            }
+        } else {
+            userName = res.success.username;
+            console.log('####################\nHue Username: ' + userName + '\nPlease write it down and pass it as parameter to the agent next time.\n####################');
+            registerAgent();
+        }
+    });
+}
 
 /********************************************************************************/
 /* Device registration
@@ -67,7 +91,7 @@ function registerAgent() {
         }
         const deviceInfo = JSON.parse(body).deviceInfo;
         const connectionString = "HostName=HueHub.azure-devices.net;DeviceId=" + deviceInfo.deviceId + ";SharedAccessKey=" + deviceInfo.authentication.symmetricKey.primaryKey;
-        console.log('********************\nThis is your UUID: ' + uuid + '\n********************')
+        console.log('********************\nThis is your UUID: ' + uuid + '\nUse it to configure the HueBot.\n********************')
         startAgent(connectionString); 
     });
 }
