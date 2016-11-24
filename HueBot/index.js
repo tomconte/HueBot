@@ -18,49 +18,82 @@ var bot = new builder.UniversalBot(connector);
 //=========================================================
 
 // TODO: store this in user session
-const UUID = '001788fffe09ff3c-SytarAfJSr2talYJE-fuSc9D6s1hbgzBe9dEqxd0';
-const PROXY_URL = 'https://huebot.azurewebsites.net/api/command/' + UUID;
+const PROXY_URL = 'https://huebot.azurewebsites.net/api/command/';
 
-bot.dialog('/', function (session, args, next) {
-    let t = session.message.text.toLowerCase();
-    switch (t) {
-        case 'on':
-        case 'allume':
-        case 'allume toutes les lumières':
-        case 'allume les lumières':
-            session.send("J'allume les lumières !");
-            request.post({
-                url: PROXY_URL,
-                json: {command: 'turnAllLightsOn'}
-            });
-            break;
-        case 'off':
-        case 'éteint':
-        case 'éteint toutes les lumières':
-        case 'éteint les lumières':
-            session.send("J'éteins les lumières !");
-            request.post({
-                url: PROXY_URL,
-                json: {command: 'turnAllLightsOff'}
-            });
-            break;
-        case 'tu es bête':
-            session.send('Et toi tu es débile !');
-            break;
-        default:
-            if (t.substring(0, 5) == 'scene') {
-                let sceneName = t.split(' ')[1];
-                session.send('Je rappelle la scène ' + sceneName + ' !');
+bot.dialog('/', [ 
+    function (session, args, next) {
+        if (!session.userData.uuid) {
+            session.send('Hi! Before I can control your Hue Lights, I will need the UUID displayed by the HueBot Agent.');
+            session.beginDialog('/uuid');
+        } else {
+            next();
+        }
+    },
+    function (session, results) {
+
+        // If we just got the UUID, restart conversation
+        if (results.response) session.endConversation('Thanks ! Your UUID is now set.');
+
+        let t = session.message.text;
+
+        switch (t.toLowerCase()) {
+            case 'on':
+            case 'lights on':
+            case 'turn on the lights':
+            case 'turn all the lights on':
+                session.endConversation("I am turning on the lights !");
                 request.post({
-                    url: PROXY_URL,
-                    json: {command: 'recallScene', scene: sceneName}
+                    url: PROXY_URL + session.userData.uuid,
+                    json: {command: 'turnAllLightsOn'}
                 });
-            } else {
-                session.send("Commande inconnue !");
-            }
-            break;
+                break;
+            case 'off':
+            case 'lights off':
+            case 'turn off the lights':
+            case 'turn all the lights off':
+                session.endConversation("I am turning off the lights !");
+                request.post({
+                    url: PROXY_URL + session.userData.uuid,
+                    json: {command: 'turnAllLightsOff'}
+                });
+                break;
+            case 'hi':
+            case 'help':
+                session.send('Use these commands: on, off, scene.');
+                session.endConversation('See you !');
+                break;
+            case 'uuid':
+            case 'what is my uuid':
+                session.endConversation('Your UUID is: ' + session.userData.uuid);
+                break;
+            case 'change my uuid':
+                session.beginDialog('/uuid');
+                break;
+            default:
+                if (t.substring(0, 5) == 'scene') {
+                    let sceneName = t.split(' ')[1];
+                    session.endConversation('I am recalling scene ' + sceneName + ' !');
+                    request.post({
+                        url: PROXY_URL + session.userData.uuid,
+                        json: {command: 'recallScene', scene: sceneName}
+                    });
+                } else {
+                    session.endConversation("Unknown command !");
+                }
+                break;
+        }
     }
-});
+]);
+
+bot.dialog('/uuid', [
+    function (session) {
+        builder.Prompts.text(session, 'Please type in your UUID:');
+    },
+    function (session, results) {
+        session.userData.uuid = results.response;
+        session.endDialog();
+    }
+]);
 
 //=========================================================
 // Deployment
